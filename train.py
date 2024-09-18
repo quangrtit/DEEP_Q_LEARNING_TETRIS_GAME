@@ -19,7 +19,7 @@ if __name__ == "__main__":
                 #     agent.update_target_NN()
                 if environment.lines > best_score: 
                     best_score = environment.lines
-                    agent.save_model("models/bach_duong_best.pth" + str(environment.lines))
+                    agent.save_model("models_demo/bach_duong_best.pth" + str(environment.lines))
                 break  
             print("epochs:", epoch, "count: ", count, "lines:", environment.lines, "epsilon: ", agent.epsilon)
             count += 1
@@ -30,5 +30,5 @@ if __name__ == "__main__":
         agent.epsilon = agent.epsilon_min + (max(agent.num_epsilon_decay - epoch, 0) * (1 - agent.epsilon_min) / agent.num_epsilon_decay)
         print("epochs_last: ", epoch, "new line complete: ", environment.lines)
         epoch += 1
-    agent.save_model("models/anh_quang.pth")
+    agent.save_model("models_demo/anh_quang.pth")
     environment.close_game()

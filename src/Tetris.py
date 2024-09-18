@@ -61,34 +61,12 @@ class Tetris:
         self.gameover = False
         self.complete_lines = 0
         self.rand_new_tetromino()
-        # self.bag = [i for i in range(len(self.tetrominos))]
-        # self.id_current_tetromino = random.randint(0, len(self.tetrominos) - 1)
-        # self.current_tetromino = self.tetrominos[self.id_current_tetromino]
-        # demo = self.random_action()
         self.block_size = BLOCK_SIZE
         self.x_tetromino = 0
         self.y_tetromino = 0
         self.score = 0
         self.num_tetrominos = 0
         self.lines = 0
-        self.action_location = {
-            0: "action 0 * BLOCK",
-            1: "action 1 * BLOCK",
-            2: "action 2 * BLOCK", 
-            3: "action 3 * BLOCK",
-            4: "action 4 * BLOCK", 
-            5: "action 5 * BLOCK",
-            6: "action 6 * BLOCK",
-            7: "action 7 * BLOCK",
-            8: "action 8 * BLOCK",
-            9: "action 9 * BLOCK",
-        }
-        self.action_rotate = {
-            0: "action rotate 0 * 90",
-            1: "action rotate 1 * 90",
-            2: "action rotate 2 * 90", 
-            3: "action rotate 3 * 90"
-        }
         # self.render()
         state, self.board, complete_lines = self.get_state(self.board)
         return state
@@ -110,21 +88,6 @@ class Tetris:
                     tetromino_after[j].append(tetromino[i][j])
             tetromino = tetromino_after
         return tetromino
-    # def random_action(self): # purpose get action avaiable to example
-    #     action_location = random.randint(0, self.width - 1)
-    #     action_rotate = random.randint(0, 3)
-    #     action = (action_location, action_rotate)
-    #     while not self.check_action_accept(action):
-    #         action_location = random.randint(0, self.width - 1)
-    #         action_rotate = random.randint(0, 3)
-    #         action = (action_location, action_rotate)
-    #     return action
-    # def check_action_accept(self, action):
-    #     action_location, action_rotate = action[0], action[1]
-    #     tetromino_tmp = self.rotate_tetromino(action_rotate, self.current_tetromino)
-    #     if (action_location + len(tetromino_tmp[0]) <= self.width):
-    #         return True 
-    #     return False
     def rand_new_tetromino(self):
         if len(self.bag) == 0:
             self.bag = [i for i in range(len(self.tetrominos))]
@@ -268,21 +231,7 @@ class Tetris:
         # self.current_tetromino = self.tetrominos[self.id_current_tetromino]
         self.rand_new_tetromino()
         self.y_tetromino = 0
-        # xx, yy = self.random_action()
-        # self.x_tetromino = xx * BLOCK_SIZE
-        # self.current_tetromino = self.rotate_tetromino(yy, self.current_tetromino)
-        # if not self.check_collision(self.board, self.x_tetromino, self.y_tetromino, self.current_tetromino, self.id_current_tetromino):
-        #     self.y_tetromino += BLOCK_SIZE
-        # else: 
-        #     self.board = self.update_board(self.board, self.x_tetromino, self.y_tetromino, self.current_tetromino, self.id_current_tetromino)
         #     # print("dit me may")
-        #     self.id_current_tetromino = random.randint(0, len(self.tetrominos) - 1)
-        #     self.current_tetromino = self.tetrominos[self.id_current_tetromino]
-        #     xx, yy = self.random_action()
-        #     self.x_tetromino = xx * BLOCK_SIZE
-        #     self.current_tetromino = self.rotate_tetromino(yy, self.current_tetromino)
-        #     self.y_tetromino = 0
-        #     self.get_states()
         # check end game
         # print("fix mai deo duoc: ", environment.x_tetromino, environment.y_tetromino, environment.current_tetromino)
         next_state, self.board, complete_lines = self.get_state(self.board)

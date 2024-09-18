@@ -5,7 +5,6 @@ import torch
 from collections import deque
 import torch.nn as nn
 import torch.optim as optim
-import os
 import torch.nn.functional as F
 # from . import Tetris as g
 
@@ -21,12 +20,12 @@ class Agent:
         self.replay_size = replay_size
         self.replay_buffer = deque(maxlen=replay_size)
         self.main_NN = dn.NN(4, 1).to(self.device)
-        self.target_NN = dn.NN(4, 1).to(self.device)
+        # self.target_NN = dn.NN(4, 1).to(self.device)
         self.criterion = nn.MSELoss()
         self.optimizer_main = optim.Adam(self.main_NN.parameters(), lr=self.learning_rate)
-        self.update_target_NN()
-    def update_target_NN(self):
-        self.target_NN.load_state_dict(self.main_NN.state_dict())
+        # self.update_target_NN()
+    # def update_target_NN(self):
+    #     self.target_NN.load_state_dict(self.main_NN.state_dict())
     def save_experience(self, state, action, reward, next_state, done):
         self.replay_buffer.append((state, action, reward, next_state, done))
     def get_batch_from_buffer(self):
@@ -35,7 +34,7 @@ class Agent:
         torch.save(self.main_NN.state_dict(), path)
     def load_model(self, path):
         self.main_NN.load_state_dict(torch.load(path, weights_only=True)) 
-        self.update_target_NN()
+        # self.update_target_NN()
     def choose_action(self, environment):
         action_and_state = environment.get_states() # get all state when adjust x_tetromino and rotate it 
         actions, states = zip(*action_and_state.items())
