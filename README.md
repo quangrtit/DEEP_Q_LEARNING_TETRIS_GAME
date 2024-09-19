@@ -2,18 +2,14 @@
 
 . link paper: https://dione.lib.unipi.gr/xmlui/bitstream/handle/unipi/13891/Thesis___Big_Data___Analytics__Ioannis_Tsirovasilis_.pdf?sequence=1&isAllowed=y
 
-
 . link introduction: https://codemyroad.wordpress.com/2013/04/14/tetris-ai-the-near-perfect-player/
 
 
 . library:
 
-    -torch 2.4.0
-    
-    -numpy 1.26.4
-    
-    -pygame 2.6.0
-
+    torch 2.4.0    
+    numpy 1.26.4
+    pygame 2.6.0
 
 . Input Layer: The input layer accepting the state representation.
 
@@ -34,10 +30,10 @@
 . Learning Rate: Learning rate is set to 0.001.
 
 
-. run: 
+. run: (with bach_duong_best + max_score.pth is model of best score and anh_quang.pth is model of final score) 
 
-    -python test.py (with bach_duong_best + max_score.pth is model of best score and anh_quang.pth is model of final score)
+    python test.py 
 
 . train:
 
-    -python train.py
+    python train.py
