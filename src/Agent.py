@@ -17,6 +17,7 @@ class Agent:
         self.gamma = gamma
         self.batch_size = batch_size
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        # self.device = torch.device("cpu")
         self.replay_size = replay_size
         self.replay_buffer = deque(maxlen=replay_size)
         self.main_NN = dn.NN(4, 1).to(self.device)
@@ -33,8 +34,8 @@ class Agent:
     def save_model(self, path):
         torch.save(self.main_NN.state_dict(), path)
     def load_model(self, path):
-        self.main_NN.load_state_dict(torch.load(path, weights_only=True)) 
-        # self.update_target_NN()
+        # self.main_NN.load_state_dict(torch.load(path, weights_only=True)) 
+        self.main_NN.load_state_dict(torch.load(path, map_location=torch.device('cpu')))
     def choose_action(self, environment):
         action_and_state = environment.get_states() # get all state when adjust x_tetromino and rotate it 
         actions, states = zip(*action_and_state.items())

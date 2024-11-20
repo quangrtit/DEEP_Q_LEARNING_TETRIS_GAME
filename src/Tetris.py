@@ -215,13 +215,13 @@ class Tetris:
         done = self.end_game()
         if done: 
             next_state, self.board, complete_lines = self.get_state(self.board)
-            reward = 1 + (complete_lines ** 2) * self.width
+            reward = 100 + (complete_lines ** 2) * self.width
             # print("data is reward: ", reward, complete_lines)
             self.lines += complete_lines
             self.score += reward
             self.num_tetrominos += 1
             if done: 
-                self.score -= 2
+                self.score -= 300
             return next_state, reward, done, self.score
         while not self.check_collision(self.board, self.x_tetromino, self.y_tetromino, self.current_tetromino, self.id_current_tetromino):
             self.y_tetromino += BLOCK_SIZE
@@ -235,12 +235,12 @@ class Tetris:
         # check end game
         # print("fix mai deo duoc: ", environment.x_tetromino, environment.y_tetromino, environment.current_tetromino)
         next_state, self.board, complete_lines = self.get_state(self.board)
-        reward = 1 + (complete_lines ** 2) * self.width
+        reward = 100 + (complete_lines ** 2) * self.width
         self.lines += complete_lines
         self.score += reward
         self.num_tetrominos += 1
         if done: 
-            reward -= 2
+            reward -= 300
         return next_state, reward, done, self.score
     def render(self):
         self.display.fill(BLACK)

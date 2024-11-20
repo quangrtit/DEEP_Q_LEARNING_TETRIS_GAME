@@ -2,7 +2,7 @@ from src import Tetris, Agent
 if __name__ == "__main__":
     environment = Tetris()
     environment.change_speed(5000)
-    agent = Agent(0.001, 1.0, 2000, 0.001, 0.99, 512, 30000)
+    agent = Agent(0.001, 1.0, 2000, 0.000000, 0.99, 512, 32768)
     best_score = 0
     count = 1
     epoch = 0
@@ -17,14 +17,16 @@ if __name__ == "__main__":
             if done: 
                 # if epoch % 16 == 0:
                 #     agent.update_target_NN()
-                if environment.lines > best_score: 
+                if environment.lines > best_score and environment.lines >= 10000: 
                     best_score = environment.lines
+                    if environment.lines >= 30000:
+                        agent.learning_rate /= 2
                     agent.save_model("models_demo/bach_duong_best.pth" + str(environment.lines))
                 break  
             print("epochs:", epoch, "count: ", count, "lines:", environment.lines, "epsilon: ", agent.epsilon)
             count += 1
             state = next_state
-        if len(agent.replay_buffer) < agent.replay_size / 10: #  we can enought state to trainning NOTICE if we take too few states to train it will be ineffective
+        if len(agent.replay_buffer) < agent.replay_size / 15: #  we can enought state to trainning NOTICE if we take too few states to train it will be ineffective
             continue  
         agent.train_one_bacth()
         agent.epsilon = agent.epsilon_min + (max(agent.num_epsilon_decay - epoch, 0) * (1 - agent.epsilon_min) / agent.num_epsilon_decay)
