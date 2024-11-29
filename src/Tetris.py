@@ -14,6 +14,7 @@ GREEN = (0, 255, 0)
 BLUE = (50, 153, 213)
 PINK = (255,192,203) 
 PURPLE = (128,0,128)
+check_tetromino = {0: '\I.png', 1: '\O.png', 2: '\T.png', 3: '\S.png', 4: '\Z.png', 5: '\J.png', 6: '\L.png'}
 class Tetris:
     # 7 tetrominos include I, O, T, S, Z, J, L
     color_tetrominos = [
@@ -50,7 +51,8 @@ class Tetris:
         self.width = 10
         self.height = 20
         self.fps = FRAMESPEED
-        self.bag = []
+        self.bag_now = self.fill()
+        self.bag_next = self.fill()
         self.reset()
     def reset(self):
         pygame.init()
@@ -88,13 +90,17 @@ class Tetris:
                     tetromino_after[j].append(tetromino[i][j])
             tetromino = tetromino_after
         return tetromino
+    def fill(self):
+        list_block = [i for i in range(len(self.tetrominos))]
+        random.shuffle(list_block)
+        return list_block
     def rand_new_tetromino(self):
-        if len(self.bag) == 0:
-            self.bag = [i for i in range(len(self.tetrominos))]
-            random.shuffle(self.bag)
-        self.id_current_tetromino = self.bag[-1]
+        self.id_current_tetromino = self.bag_now[0]
         self.current_tetromino = self.tetrominos[self.id_current_tetromino]
-        self.bag.pop()
+        self.bag_now.pop(0)
+        self.bag_now.append(self.bag_next.pop(0))
+        if len(self.bag_next) == 0:
+            self.bag_next = self.fill()
     def get_and_update_complete_lines(self, board_in):
         board = [x[:] for x in board_in]
         complete_lines = 0
@@ -171,7 +177,13 @@ class Tetris:
             complete_lines, 
             holes, 
             height, 
-            bumpiness
+            bumpiness,
+            self.id_current_tetromino, 
+            self.bag_now[0],
+            self.bag_now[1],
+            self.bag_now[2],
+            self.bag_now[3],
+            self.bag_now[4]
         ]
         # print("this is data use: ", state)
         return numpy.array(state, dtype=int), board, complete_lines
@@ -214,14 +226,18 @@ class Tetris:
         self.current_tetromino = self.rotate_tetromino(num_rotate, self.current_tetromino)
         done = self.end_game()
         if done: 
-            next_state, self.board, complete_lines = self.get_state(self.board)
-            reward = 100 + (complete_lines ** 2) * self.width
-            # print("data is reward: ", reward, complete_lines)
+            next_state, self.board, complete_lines = self.get_state(self.board) 
+            holes = next_state[1]
+            height = next_state[2]
+            bumpiness = next_state[3]
+            reward = 1 + (complete_lines ** 2) * self.width
+            # reward = 10 * complete_lines + ((complete_lines ** 2) * (complete_lines - 1)) * self.width
+            # reward += -3 * holes
             self.lines += complete_lines
             self.score += reward
             self.num_tetrominos += 1
             if done: 
-                self.score -= 300
+                self.score -= 30
             return next_state, reward, done, self.score
         while not self.check_collision(self.board, self.x_tetromino, self.y_tetromino, self.current_tetromino, self.id_current_tetromino):
             self.y_tetromino += BLOCK_SIZE
@@ -235,12 +251,13 @@ class Tetris:
         # check end game
         # print("fix mai deo duoc: ", environment.x_tetromino, environment.y_tetromino, environment.current_tetromino)
         next_state, self.board, complete_lines = self.get_state(self.board)
-        reward = 100 + (complete_lines ** 2) * self.width
+        # reward = 10 + ((complete_lines ** 2) * (complete_lines - 1)) * self.width
+        reward = 1 + (complete_lines ** 2) * self.width
         self.lines += complete_lines
         self.score += reward
         self.num_tetrominos += 1
         if done: 
-            reward -= 300
+            reward -= 2
         return next_state, reward, done, self.score
     def render(self):
         self.display.fill(BLACK)
@@ -249,18 +266,23 @@ class Tetris:
         # draw score
         pygame.draw.rect(self.display, PINK, (self.width * BLOCK_SIZE, 0, self.width * BLOCK_SIZE, DIS_HEIGHT))
         font = pygame.font.SysFont("comicsansms", 35)
-        value_score = font.render(f"Score: ", True, PURPLE)
-        value_score_number = font.render(f"{self.score}", True, PURPLE)
-        value_pieces = font.render(f"Pieces:", True, PURPLE)
-        value_pieces_number = font.render(f"{self.num_tetrominos}", True, PURPLE)
+        cnt = 0
+        for i in range(5):
+            self.display.blit(pygame.image.load("D:\MY_PROJECT\DEEP_LEARNING\TETRIS_DEEP_Q_LEARNING\images" + check_tetromino[self.bag_now[i]]), (11 * BLOCK_SIZE, cnt * BLOCK_SIZE))
+            cnt += 2.5
+        # self.display.blit(font.render(f"Send Lines:", True, PURPLE), (11 * BLOCK_SIZE, cnt * BLOCK_SIZE))
+        # value_score = font.render(f"Score: ", True, PURPLE)
+        # value_score_number = font.render(f"{self.score}", True, PURPLE)
+        # value_pieces = font.render(f"Pieces:", True, PURPLE)
+        # value_pieces_number = font.render(f"{self.num_tetrominos}", True, PURPLE)
         value_lines = font.render(f"Lines:", True, PURPLE)
         value_lines_number = font.render(f"{self.lines}", True, PURPLE)
-        self.display.blit(value_score, [11 * BLOCK_SIZE, 0])  
-        self.display.blit(value_score_number, [11 * BLOCK_SIZE, BLOCK_SIZE * 1.5])
-        self.display.blit(value_pieces, [11 * BLOCK_SIZE, 4 * BLOCK_SIZE]) 
-        self.display.blit(value_pieces_number, [11 * BLOCK_SIZE, 4 * BLOCK_SIZE + BLOCK_SIZE * 1.5])
-        self.display.blit(value_lines, [11 * BLOCK_SIZE, 8 * BLOCK_SIZE]) 
-        self.display.blit(value_lines_number, [11 * BLOCK_SIZE, 8 * BLOCK_SIZE + BLOCK_SIZE * 1.5])
+        # self.display.blit(value_score, [11 * BLOCK_SIZE, 0])  
+        # self.display.blit(value_score_number, [11 * BLOCK_SIZE, BLOCK_SIZE * 1.5])
+        # self.display.blit(value_pieces, [11 * BLOCK_SIZE, 4 * BLOCK_SIZE]) 
+        # self.display.blit(value_pieces_number, [11 * BLOCK_SIZE, 4 * BLOCK_SIZE + BLOCK_SIZE * 1.5])
+        self.display.blit(value_lines, [11 * BLOCK_SIZE, 17 * BLOCK_SIZE]) 
+        self.display.blit(value_lines_number, [11 * BLOCK_SIZE, 17 * BLOCK_SIZE + BLOCK_SIZE * 1.5])
         # draw board
         for i in range(len(self.board)):
             for j in range(len(self.board[i])):

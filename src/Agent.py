@@ -20,8 +20,7 @@ class Agent:
         # self.device = torch.device("cpu")
         self.replay_size = replay_size
         self.replay_buffer = deque(maxlen=replay_size)
-        self.main_NN = dn.NN(4, 1).to(self.device)
-        # self.target_NN = dn.NN(4, 1).to(self.device)
+        self.main_NN = dn.NN(10, 1).to(self.device)
         self.criterion = nn.MSELoss()
         self.optimizer_main = optim.Adam(self.main_NN.parameters(), lr=self.learning_rate)
         # self.update_target_NN()
