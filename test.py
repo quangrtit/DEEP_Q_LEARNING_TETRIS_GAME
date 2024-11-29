@@ -5,6 +5,7 @@ if __name__ == "__main__":
     environment.change_speed(50000)
     agent = Agent(0.001, 0.0, 0, 0.0, 0.99, 512, 30000)
     agent.load_model("D:\MY_PROJECT\DEEP_LEARNING\TETRIS_DEEP_Q_LEARNING\models\model16527-2025")
+    agent.save_model("D:\MY_PROJECT\DEEP_LEARNING\TETRIS_DEEP_Q_LEARNING\models_best\model_best4.pth")
     while True:
         state = environment.reset()
         cnt = 0
